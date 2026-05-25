@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Painel Admin</title>
+
+<style>
+
+body{
+  background:#0b0b0b;
+  color:white;
+  font-family:Arial;
+  padding:30px;
+}
+
+h1{
+  color:#d4af37;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:20px;
+}
+
+th, td{
+  border:1px solid #333;
+  padding:12px;
+  text-align:center;
+}
+
+th{
+  background:#111;
+  color:#d4af37;
+}
+
+tr:nth-child(even){
+  background:#151515;
+}
+
+button{
+  padding:8px 14px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  margin:2px;
+}
+
+.btn-delete{
+  background:#ff3b3b;
+  color:white;
+}
+
+.btn-status{
+  background:#d4af37;
+  color:black;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>Painel Admin - Space Viana</h1>
+
+<table>
+
+<thead>
+<tr>
+
+<th>ID</th>
+<th>Nome</th>
+<th>Telefone</th>
+<th>Data</th>
+<th>Hora</th>
+<th>Status</th>
+<th>Ações</th>
+
+</tr>
+</thead>
+
+<tbody id="tabelaReservas">
+
+</tbody>
+
+</table>
+
+<script>
+
+const TOKEN = "123456";
+
+async function carregarReservas(){
+
+  const resposta = await fetch(
+    `http://127.0.0.1:8000/admin/reservas?token=${TOKEN}`
+  );
+
+  const reservas = await resposta.json();
+
+  const tabela = document.getElementById("tabelaReservas");
+
+  tabela.innerHTML = "";
+
+  reservas.forEach(reserva => {
+
+    tabela.innerHTML += `
+
+      <tr>
+
+        <td>${reserva.id}</td>
+        <td>${reserva.nome}</td>
+        <td>${reserva.telefone}</td>
+        <td>${reserva.data}</td>
+        <td>${reserva.hora}</td>
+        <td>${reserva.status}</td>
+
+        <td>
+
+          <button
+            class="btn-status"
+            onclick="aprovar(${reserva.id})"
+          >
+            Aprovar
+          </button>
+
+          <button
+            class="btn-delete"
+            onclick="deletar(${reserva.id})"
+          >
+            Deletar
+          </button>
+
+        </td>
+
+      </tr>
+
+    `;
+
+  });
+
+}
+
+async function deletar(id){
+
+  const confirmar = confirm(
+    "Deseja deletar esta reserva?"
+  );
+
+  if(!confirmar) return;
+
+  await fetch(
+    `http://127.0.0.1:8000/admin/reserva/${id}?token=${TOKEN}`,
+    {
+      method:"DELETE"
+    }
+  );
+
+  carregarReservas();
+
+}
+
+async function aprovar(id){
+
+  await fetch(
+    `http://127.0.0.1:8000/admin/status/${id}?status=confirmado&token=${TOKEN}`,
+    {
+      method:"PUT"
+    }
+  );
+
+  carregarReservas();
+
+}
+
+carregarReservas();
+
+</script>
+
+</body>
+</html>
