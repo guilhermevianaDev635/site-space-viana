@@ -19,12 +19,12 @@ body {
 /* NAVBAR */
 .navbar {
   position: fixed;
-  width: 95%;
+  width: 100%;
   top: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 40px;
+  padding: 15px 20px;
 
   background: rgba(0,0,0,0.3); /* mais transparente */
   backdrop-filter: blur(6px);
@@ -301,17 +301,36 @@ body {
 }
 
 @media (max-width: 768px) {
+
   .hero {
     height: 75vh;
   }
 
   .hero h1 {
-    font-size: 35px;
+    font-size: 28px;
   }
 
   .navbar {
-    padding: 10px 20px;
+    width: 100%;
+    padding: 15px;
+    flex-direction: column;
+    gap: 15px;
   }
+
+  .nav-links {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .hero-content p {
+    font-size: 16px;
+    padding: 0 10px;
+  }
+
+  .linha {
+    width: 90%;
+  }
+
 }
 .logo-img {
   height: 40px;
