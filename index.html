@@ -348,6 +348,20 @@ body {
     width: 30px;
     height: 30px;
   }
+  .item {
+    width: 90%;
+    min-height: 250px;
+    overflow: hidden;
+}
+
+  .item p {
+    font-size: 16px;
+    line-height: 1.4;
+  }
+
+  .item h3 {
+    font-size: 20px;
+  }
 }
 .logo-img {
   height: 40px;
@@ -454,13 +468,13 @@ body {
 .hero-content h1 {
     font-size: 60px;
     letter-spacing: 3px;
-    animation: fadeIn 1.5s ease-in-out;
+    /*animation: fadeIn 1.5s ease-in-out;*/
 }
 
 .hero-content p {
     margin: 20px 0;
     font-size: 20px;
-    animation: fadeIn 2s ease-in-out;
+    /*animation: fadeIn 2s ease-in-out;*/
 }
 
 .btn-reserva {
@@ -776,7 +790,9 @@ window.addEventListener("scroll", function () {
 
 });
 
-lucide.createIcons();
+window.addEventListener("DOMContentLoaded", () => {
+  lucide.createIcons();
+});
 
 const btnReservar = document.getElementById("btnReservar");
 
