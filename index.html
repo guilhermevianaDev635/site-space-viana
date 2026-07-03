@@ -775,6 +775,8 @@ body {
 
     <input type="date" id="data">
 
+    <input type="time" id="hora">
+
    <button id="btnReservar" type="button">
   Reservar
 </button>
@@ -808,6 +810,7 @@ btnReservar.addEventListener("click", async () => {
   const nome = document.getElementById("nome").value;
   const telefone = document.getElementById("telefone").value;
   const data = document.getElementById("data").value;
+  const hora = document.getElementById("hora").value;
 
   console.log({
     nome,
@@ -815,7 +818,7 @@ btnReservar.addEventListener("click", async () => {
     data
   });
 
-  if (!nome || !telefone|| !data) {
+  if (!nome || !telefone|| !data|| !hora) {
 
     alert("Preencha todos os campos");
 
@@ -837,6 +840,7 @@ btnReservar.addEventListener("click", async () => {
           nome,
           telefone,
           data,
+          hora
         })
 
       }
