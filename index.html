@@ -687,6 +687,40 @@ body {
     font-weight:bold;
 }
 
+.lista-horarios{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:20px;
+}
+
+.horario{
+    padding:12px 18px;
+    background:#111;
+    border:1px solid #d4af37;
+    color:#d4af37;
+    border-radius:10px;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.horario:hover{
+    background:#d4af37;
+    color:black;
+}
+
+.horario.ativo{
+    background:#d4af37;
+    color:black;
+}
+
+.horario.bloqueado{
+    background:#333;
+    color:#777;
+    border-color:#555;
+    cursor:not-allowed;
+}
+
 </style>
 </head>
 
@@ -799,24 +833,17 @@ body {
 
     <input type="date" id="data">
 
+    <div id="listaHorarios" class="lista-horarios"></div>
+
     <label for="hora">Escolha um horário</label>
+
+<label for="hora">Horário de início</label>
 
 <select id="hora">
     <option value="">Selecione um horário</option>
-    <option value="08:00">08:00</option>
-    <option value="09:00">09:00</option>
-    <option value="10:00">10:00</option>
-    <option value="11:00">11:00</option>
-    <option value="12:00">12:00</option>
-    <option value="13:00">13:00</option>
-    <option value="14:00">14:00</option>
-    <option value="15:00">15:00</option>
-    <option value="16:00">16:00</option>
-    <option value="17:00">17:00</option>
-    <option value="18:00">18:00</option>
-    <option value="19:00">19:00</option>
-    <option value="20:00">20:00</option>
 </select>
+
+<p id="horarioFinal" style="color:#d4af37;margin-top:10px;font-weight:bold;"></p>
 
    <button id="btnReservar" type="button">
   Reservar
@@ -846,6 +873,57 @@ window.addEventListener("DOMContentLoaded", () => {
   lucide.createIcons();
 });
 
+const selectHora = document.getElementById("hora");
+
+for(let hora = 8; hora <= 22; hora++){
+
+    ["00","30"].forEach(minuto=>{
+
+        if(hora === 22 && minuto === "30") return;
+
+        const option = document.createElement("option");
+
+        option.value = `${String(hora).padStart(2,"0")}:${minuto}`;
+
+        option.textContent = option.value;
+
+        selectHora.appendChild(option);
+
+    });
+
+}
+
+selectHora.addEventListener("change", ()=>{
+
+    if(!selectHora.value){
+
+        document.getElementById("horarioFinal").textContent = "";
+
+        return;
+
+    }
+
+    const [hora,minuto] = selectHora.value.split(":").map(Number);
+
+    const inicio = new Date();
+
+    inicio.setHours(hora,minuto);
+
+    const fim = new Date(inicio);
+
+    fim.setHours(fim.getHours()+6);
+
+    const horaFinal =
+        String(fim.getHours()).padStart(2,"0");
+
+    const minutoFinal =
+        String(fim.getMinutes()).padStart(2,"0");
+
+    document.getElementById("horarioFinal").textContent =
+        `Sua reserva será das ${selectHora.value} às ${horaFinal}:${minutoFinal}`;
+
+});
+
 const btnReservar = document.getElementById("btnReservar");
 
 btnReservar.addEventListener("click", async () => {
@@ -853,7 +931,7 @@ btnReservar.addEventListener("click", async () => {
   const nome = document.getElementById("nome").value;
   const telefone = document.getElementById("telefone").value;
   const data = document.getElementById("data").value;
-  const hora = document.getElementById("hora").value;
+  const hora = horarioSelecionado;
 
   console.log({
     nome,
@@ -917,6 +995,86 @@ btnReservar.addEventListener("click", async () => {
   }
 
 });
+
+const campoData = document.getElementById("data");
+
+campoData.addEventListener("change", carregarHorarios);
+
+async function carregarHorarios() {
+
+    const dataSelecionada = document.getElementById("data").value;
+
+    if (!dataSelecionada) return;
+
+    const resposta = await fetch("http://127.0.0.1:8000/reservas");
+
+    const reservas = await resposta.json();
+
+    // Libera todos os horários
+    document.querySelectorAll(".horario").forEach(botao => {
+        botao.classList.remove("bloqueado");
+    });
+
+    // Procura reservas da data escolhida
+    reservas.forEach(reserva => {
+
+        if (reserva.data === dataSelecionada) {
+
+            document.querySelectorAll(".horario").forEach(botao => {
+
+                if (botao.textContent === reserva.hora) {
+
+                    botao.classList.add("bloqueado");
+
+                }
+
+            });
+
+        }
+
+    });
+
+}
+
+const lista = document.getElementById("listaHorarios");
+
+let horarioSelecionado = "";
+
+for (let h = 8; h <= 22; h++) {
+
+    ["00", "30"].forEach(m => {
+
+        if (h === 22 && m === "30") return;
+
+        const botao = document.createElement("button");
+
+        botao.className = "horario";
+
+        botao.textContent = `${String(h).padStart(2, "0")}:${m}`;
+
+        botao.addEventListener("click", () => {
+
+            if (botao.classList.contains("bloqueado")) return;
+
+            document
+                .querySelectorAll(".horario")
+                .forEach(b => b.classList.remove("ativo"));
+
+            botao.classList.add("ativo");
+
+            horarioSelecionado = botao.textContent;
+
+            console.log(horarioSelecionado);
+
+        });
+
+        lista.appendChild(botao);
+
+    });
+
+}
+
+document.getElementById("data").addEventListener("change", carregarHorarios);
 
 </script>
 <a href="https://wa.me/5521990300858" class="whats-fixo" target="_blank">
